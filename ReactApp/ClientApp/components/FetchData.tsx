@@ -1,63 +1,66 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import 'isomorphic-fetch';
+import {
+    Persona,
+    PersonaSize,
+    PersonaPresence,
+    PersonaInitialsColor
+} from 'office-ui-fabric-react/lib/Persona';
 
 interface FetchDataExampleState {
-    forecasts: WeatherForecast[];
+    persons: Person[];
     loading: boolean;
 }
 
 export class FetchData extends React.Component<RouteComponentProps<{}>, FetchDataExampleState> {
     constructor() {
         super();
-        this.state = { forecasts: [], loading: true };
+        this.state = { persons: [], loading: true };
 
-        fetch('api/SampleData/WeatherForecasts')
-            .then(response => response.json() as Promise<WeatherForecast[]>)
+        fetch('api/SampleData/Persons')
+            .then(response => response.json() as Promise<Person[]>)
             .then(data => {
-                this.setState({ forecasts: data, loading: false });
+                this.setState({ persons: data, loading: false });
             });
     }
 
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : FetchData.renderForecastsTable(this.state.forecasts);
+            : FetchData.renderPersons(this.state.persons);
 
         return <div>
-            <h1>Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
+            <div className='ms-font-su ms-fontColor-themePrimary'>
+                Persons
+            </div>
             { contents }
         </div>;
     }
 
-    private static renderForecastsTable(forecasts: WeatherForecast[]) {
-        return <table className='table'>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-            {forecasts.map(forecast =>
-                <tr key={ forecast.dateFormatted }>
-                    <td>{ forecast.dateFormatted }</td>
-                    <td>{ forecast.temperatureC }</td>
-                    <td>{ forecast.temperatureF }</td>
-                    <td>{ forecast.summary }</td>
-                </tr>
-            )}
-            </tbody>
-        </table>;
+    private static renderPersons(persons: Person[]) {
+        return (
+            <div>
+                {persons.map(person => 
+                    <div>
+                        <Persona
+                            presence={person.presence}
+                            size={PersonaSize.regular}
+                            primaryText={person.fullName}
+                            secondaryText={person.jobTitle}
+                            imageInitials={person.initials}
+                            initialsColor={person.initialsColor} />
+                    </div>
+                )}
+            </div>
+        );
     }
 }
 
-interface WeatherForecast {
-    dateFormatted: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+interface Person {
+    fullName: string;
+    jobTitle: string;
+    presence: number;
+    initialsColor: number;
+    initials: string;
 }

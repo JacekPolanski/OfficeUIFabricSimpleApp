@@ -9,35 +9,65 @@ namespace ReactApp.Controllers
     [Route("api/[controller]")]
     public class SampleDataController : Controller
     {
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public IEnumerable<Person> Persons()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return new List<Person>
             {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+                Person.Marek(),
+                Person.Jacek()
+            };
         }
 
-        public class WeatherForecast
+        public enum Presence
         {
-            public string DateFormatted { get; set; }
-            public int TemperatureC { get; set; }
-            public string Summary { get; set; }
+            None = 0, Offline, Online, Away, Dnd, Blocked, Busy,
+        }
 
-            public int TemperatureF
+        public enum InitialsColor
+        {
+            LightBlue = 0, Blue, DarlBlue, Teal, LightGreen, Green, DarkGree, LightPink, Pink, Magenta, Purple, Black, Oragne, Red, DarkRed
+        }
+
+        public class Person
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string JobTitle { get; set; }
+            public Presence Presence { get; set; }
+            public InitialsColor InitialsColor { get; set; }
+
+            public string FullName
             {
-                get
+                get => $"{FirstName} {LastName}";
+            }
+            public string Initials
+            {
+                get => $"{FirstName[0]}{LastName[0]}";
+            }
+
+            public static Person Marek()
+            {
+                return new Person()
                 {
-                    return 32 + (int)(TemperatureC / 0.5556);
-                }
+                    FirstName = "Marek",
+                    LastName = "Kowalski",
+                    JobTitle = "Software Engineer",
+                    Presence = Presence.Online,
+                    InitialsColor = InitialsColor.LightBlue
+                };
+            }
+
+            public static Person Jacek()
+            {
+                return new Person()
+                {
+                    FirstName = "Jacek",
+                    LastName = "Kowalski",
+                    JobTitle = "Software Engineer",
+                    Presence = Presence.Offline,
+                    InitialsColor = InitialsColor.Red
+                };
             }
         }
     }
